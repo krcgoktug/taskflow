@@ -5,7 +5,7 @@ import { AlertTriangle, CheckCircle2, CircleDashed, ListTodo } from "lucide-reac
 import type { ReactNode } from "react";
 
 export const metadata = {
-  title: "Overview",
+  title: "Genel bakış",
 };
 
 function StatCard({
@@ -13,24 +13,24 @@ function StatCard({
   value,
   note,
   icon,
-  color,
+  warning = false,
 }: {
   label: string;
   value: number;
   note: string;
   icon: ReactNode;
-  color: string;
+  warning?: boolean;
 }) {
   return (
-    <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <article className="border border-[#d9d9d3] bg-white p-5">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-sm font-medium text-slate-500">{label}</p>
-          <p className="mt-2 text-3xl font-bold text-slate-950">{value}</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[#68717d]">{label}</p>
+          <p className="mt-3 text-3xl font-semibold text-[#202833]">{value}</p>
         </div>
-        <span className={`rounded-xl p-2.5 ${color}`}>{icon}</span>
+        <span className={warning ? "text-[#a85136]" : "text-[#245c54]"}>{icon}</span>
       </div>
-      <p className="mt-3 text-xs text-slate-500">{note}</p>
+      <p className="mt-4 border-t border-[#ecece7] pt-3 text-xs text-[#68717d]">{note}</p>
     </article>
   );
 }
@@ -50,7 +50,7 @@ export default function OverviewPage() {
   return (
     <div className="mx-auto max-w-7xl">
       <PageHeader
-        title="Overview"
+        title="Genel bakış"
         description="Projenin genel durumu ve yaklaşan görevler."
       />
 
@@ -58,51 +58,48 @@ export default function OverviewPage() {
         <StatCard
           label="Toplam görev"
           value={tasks.length}
-          note="TaskFlow MVP içindeki tüm işler"
+          note="Proje kapsamındaki tüm işler"
           icon={<ListTodo className="h-5 w-5" />}
-          color="bg-slate-100 text-slate-700"
         />
         <StatCard
           label="Devam eden"
           value={inProgress}
           note="Geliştirme veya kontrol aşamasında"
           icon={<CircleDashed className="h-5 w-5" />}
-          color="bg-blue-50 text-blue-700"
         />
         <StatCard
           label="Tamamlanan"
           value={completed}
-          note="İlk hafta kapsamından biten işler"
+          note="Tamamlanarak kapatılan işler"
           icon={<CheckCircle2 className="h-5 w-5" />}
-          color="bg-emerald-50 text-emerald-700"
         />
         <StatCard
           label="Geciken"
           value={overdue}
           note="Bitiş tarihi geçmiş açık görevler"
           icon={<AlertTriangle className="h-5 w-5" />}
-          color="bg-red-50 text-red-700"
+          warning
         />
       </section>
 
       <section className="mt-6 grid gap-6 xl:grid-cols-[1.5fr_1fr]">
-        <article className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-          <div className="border-b border-slate-200 px-5 py-4">
-            <h2 className="font-semibold text-slate-950">Aktif görevler</h2>
-            <p className="mt-1 text-sm text-slate-500">
+        <article className="overflow-hidden border border-[#d9d9d3] bg-white">
+          <div className="border-b border-[#d9d9d3] px-5 py-4">
+            <h2 className="font-semibold text-[#202833]">Aktif görevler</h2>
+            <p className="mt-1 text-sm text-[#68717d]">
               Yakın tarihte ilgilenilmesi gereken işler
             </p>
           </div>
 
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-[#ecece7]">
             {currentTasks.map((task) => (
               <div
                 key={task.id}
                 className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold text-blue-600">{task.code}</p>
-                  <p className="mt-1 truncate text-sm font-medium text-slate-900">
+                  <p className="text-xs font-semibold text-[#245c54]">{task.code}</p>
+                  <p className="mt-1 truncate text-sm font-medium text-[#202833]">
                     {task.title}
                   </p>
                 </div>
@@ -115,40 +112,40 @@ export default function OverviewPage() {
           </div>
         </article>
 
-        <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <article className="border border-[#d9d9d3] bg-white p-5">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-blue-600">
+              <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[#245c54]">
                 Aktif proje
               </p>
-              <h2 className="mt-2 text-lg font-semibold text-slate-950">
+              <h2 className="mt-2 text-lg font-semibold text-[#202833]">
                 {project.name}
               </h2>
             </div>
-            <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+            <span className="border-b-2 border-[#245c54] px-1 py-1 text-sm font-semibold text-[#245c54]">
               {project.progress}%
             </span>
           </div>
 
-          <p className="mt-3 text-sm leading-6 text-slate-500">
+          <p className="mt-3 text-sm leading-6 text-[#68717d]">
             {project.description}
           </p>
 
-          <div className="mt-5 h-2 overflow-hidden rounded-full bg-slate-100">
+          <div className="mt-5 h-1.5 overflow-hidden bg-[#e7e7e1]">
             <div
-              className="h-full rounded-full bg-blue-600"
+              className="h-full bg-[#245c54]"
               style={{ width: `${project.progress}%` }}
             />
           </div>
 
-          <dl className="mt-6 grid grid-cols-2 gap-4 border-t border-slate-100 pt-5 text-sm">
+          <dl className="mt-6 grid grid-cols-2 gap-4 border-t border-[#ecece7] pt-5 text-sm">
             <div>
-              <dt className="text-slate-500">Hedef tarih</dt>
-              <dd className="mt-1 font-semibold text-slate-900">28 Eylül</dd>
+              <dt className="text-[#68717d]">Hedef tarih</dt>
+              <dd className="mt-1 font-semibold text-[#202833]">28 Eylül</dd>
             </div>
             <div>
-              <dt className="text-slate-500">Ekip</dt>
-              <dd className="mt-1 font-semibold text-slate-900">
+              <dt className="text-[#68717d]">Ekip</dt>
+              <dd className="mt-1 font-semibold text-[#202833]">
                 {project.memberCount} kişi
               </dd>
             </div>

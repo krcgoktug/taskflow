@@ -11,11 +11,11 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 const inputClassName =
-  "mt-1.5 h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100";
+  "mt-1.5 h-11 w-full border border-[#cfcfc8] bg-white px-3 text-sm text-[#202833] outline-none transition placeholder:text-slate-400 focus:border-[#245c54] focus:ring-1 focus:ring-[#245c54]";
 
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;
-  return <p className="mt-1.5 text-xs font-medium text-red-600">{message}</p>;
+  return <p className="mt-1.5 text-xs font-medium text-[#a44332]">{message}</p>;
 }
 
 export function RequestForm() {
@@ -45,11 +45,11 @@ export function RequestForm() {
   return (
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"
+        className="border border-[#d9d9d3] bg-white p-5 sm:p-6"
         noValidate
       >
         {submittedTitle && (
-          <div className="mb-5 flex gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
+          <div className="mb-5 flex gap-3 border-l-4 border-[#39705b] bg-[#f1f5f2] p-4 text-sm text-[#315e4d]">
             <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" />
             <div>
               <strong className="block">Görev bilgileri doğrulandı</strong>
@@ -128,10 +128,10 @@ export function RequestForm() {
           </div>
         </div>
 
-        <div className="mt-6 flex items-center justify-end border-t border-slate-100 pt-5">
+        <div className="mt-6 flex items-center justify-end border-t border-[#ecece7] pt-5">
           <button
             type="submit"
-            className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2"
+            className="bg-[#245c54] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#19483f] focus:outline-none focus:ring-2 focus:ring-[#9abbb4] focus:ring-offset-2"
           >
             Formu kontrol et
           </button>
