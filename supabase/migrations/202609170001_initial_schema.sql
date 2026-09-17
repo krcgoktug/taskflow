@@ -1,6 +1,3 @@
--- TaskFlow ilk veritabanı taslağı.
--- Bu dosya henüz canlı Supabase projesine uygulanmadı.
-
 create type public.project_role as enum ('owner', 'manager', 'member');
 create type public.task_status as enum ('todo', 'in_progress', 'review', 'done');
 create type public.task_priority as enum ('low', 'medium', 'high');
