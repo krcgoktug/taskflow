@@ -57,14 +57,14 @@ export function GanttChart() {
 
   if (error) {
     return (
-      <div className="border-l-4 border-[#a85136] bg-white p-4 text-sm text-[#a44332]">
+      <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
         {error}
       </div>
     );
   }
 
   return (
-    <div className="gantt-chart overflow-x-auto border border-[#d9d9d3] bg-white p-2">
+    <div className="gantt-chart overflow-x-auto rounded-xl border border-slate-200 bg-white p-2">
       <div ref={containerRef} className="min-w-[900px]" />
     </div>
   );

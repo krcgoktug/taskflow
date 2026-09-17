@@ -19,19 +19,23 @@ import { useState } from "react";
 const columns: Array<{
   status: TaskStatus;
   dotColor: string;
+  borderColor: string;
 }> = [
-  { status: "todo", dotColor: "bg-slate-400" },
+  { status: "todo", dotColor: "bg-slate-400", borderColor: "border-slate-300" },
   {
     status: "in_progress",
-    dotColor: "bg-[#3f718c]",
+    dotColor: "bg-blue-500",
+    borderColor: "border-blue-300",
   },
   {
     status: "review",
-    dotColor: "bg-[#ad7a24]",
+    dotColor: "bg-amber-500",
+    borderColor: "border-amber-300",
   },
   {
     status: "done",
-    dotColor: "bg-[#39705b]",
+    dotColor: "bg-emerald-500",
+    borderColor: "border-emerald-300",
   },
 ];
 
@@ -43,21 +47,21 @@ function KanbanCard({ task }: { task: Task }) {
     <article
       ref={setNodeRef}
       style={{ transform: CSS.Translate.toString(transform) }}
-      className={`border border-[#d5d5cf] bg-white p-4 transition ${
-        isDragging ? "z-20 opacity-70 shadow-lg" : "hover:border-[#9ba19f]"
+      className={`rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition ${
+        isDragging ? "z-20 opacity-70 shadow-xl" : "hover:border-slate-300"
       }`}
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold text-[#245c54]">{task.code}</p>
-          <h3 className="mt-1 text-sm font-semibold leading-5 text-[#202833]">
+          <p className="text-xs font-semibold text-blue-600">{task.code}</p>
+          <h3 className="mt-1 text-sm font-semibold leading-5 text-slate-900">
             {task.title}
           </h3>
         </div>
         <button
           type="button"
           aria-label={`${task.title} görevini taşı`}
-          className="cursor-grab p-1 text-slate-400 hover:bg-[#f0f0ec] hover:text-slate-700 active:cursor-grabbing"
+          className="cursor-grab rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 active:cursor-grabbing"
           style={{ touchAction: "none" }}
           {...listeners}
           {...attributes}
@@ -77,12 +81,12 @@ function KanbanCard({ task }: { task: Task }) {
         </span>
       </div>
 
-      <div className="mt-4 flex items-center justify-between border-t border-[#ecece7] pt-3">
+      <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
         <div className="flex gap-1">
           {task.tags.slice(0, 2).map((tag) => (
             <span
               key={tag}
-              className="border border-[#deded8] bg-[#f5f5f2] px-1.5 py-0.5 text-[10px] font-medium text-[#59626d]"
+              className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-600"
             >
               {tag}
             </span>
@@ -91,7 +95,7 @@ function KanbanCard({ task }: { task: Task }) {
         {task.assignee ? (
           <span
             title={task.assignee.name}
-            className="grid h-7 w-7 place-items-center bg-[#283444] text-[9px] font-semibold text-white"
+            className="grid h-7 w-7 place-items-center rounded-full bg-slate-900 text-[9px] font-semibold text-white"
           >
             {task.assignee.initials}
           </span>
@@ -106,10 +110,12 @@ function KanbanCard({ task }: { task: Task }) {
 function KanbanColumn({
   status,
   dotColor,
+  borderColor,
   tasks,
 }: {
   status: TaskStatus;
   dotColor: string;
+  borderColor: string;
   tasks: Task[];
 }) {
   const { isOver, setNodeRef } = useDroppable({ id: status });
@@ -117,18 +123,18 @@ function KanbanColumn({
   return (
     <section
       ref={setNodeRef}
-      className={`min-h-[420px] min-w-[280px] flex-1 border-t-2 bg-[#e9e9e4] p-3 transition ${
-        isOver ? "border-[#245c54] bg-[#e2ebe8]" : "border-[#aeb2b0]"
+      className={`min-h-[420px] min-w-[280px] flex-1 rounded-2xl border bg-slate-100/70 p-3 transition ${
+        isOver ? `${borderColor} ring-2 ring-blue-100` : "border-slate-200"
       }`}
     >
       <div className="mb-3 flex items-center justify-between px-1 py-1">
         <div className="flex items-center gap-2">
-          <span className={`h-2 w-2 rounded-full ${dotColor}`} />
-          <h2 className="text-sm font-semibold text-[#303944]">
+          <span className={`h-2.5 w-2.5 rounded-full ${dotColor}`} />
+          <h2 className="text-sm font-semibold text-slate-800">
             {statusLabels[status]}
           </h2>
         </div>
-        <span className="border-b border-[#7d858c] px-1 text-xs font-semibold text-[#59626d]">
+        <span className="rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-slate-500 ring-1 ring-slate-200">
           {tasks.length}
         </span>
       </div>
@@ -173,7 +179,7 @@ export function KanbanBoard({ initialTasks }: { initialTasks: Task[] }) {
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
       {lastChange && (
-        <div className="mb-4 border-l-4 border-[#245c54] bg-white px-4 py-3 text-sm text-[#245c54]">
+        <div className="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
           {lastChange}
         </div>
       )}

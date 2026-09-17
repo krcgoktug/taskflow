@@ -1,39 +1,24 @@
 @import "frappe-gantt";
 @import "tailwindcss";
 
-:root {
-  --page: #f3f3ef;
-  --surface: #ffffff;
-  --ink: #202833;
-  --muted: #68717d;
-  --line: #d9d9d3;
-  --accent: #245c54;
-  --accent-dark: #19483f;
-  --warning: #a85136;
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
 }
 
-* {
-  box-sizing: border-box;
-}
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-950;
+  }
 
-html {
-  font-family: "Segoe UI", Arial, sans-serif;
-}
-
-body {
-  margin: 0;
-  background: var(--page);
-  color: var(--ink);
-}
-
-::selection {
-  background: #c9ddd8;
-  color: #153a34;
+  html {
+    @apply font-sans;
+  }
 }
 
 .gantt-chart .gantt-container {
-  border-radius: 0.25rem;
-  font-family: "Segoe UI", Arial, sans-serif;
+  border-radius: 0.75rem;
+  font-family: var(--font-geist-sans), sans-serif;
 }
 
 .gantt-chart .gantt .bar-label {
@@ -42,17 +27,17 @@ body {
 }
 
 .gantt-chart .gantt-status-done .bar {
-  fill: #39705b;
+  fill: #10b981;
 }
 
 .gantt-chart .gantt-status-in_progress .bar {
-  fill: #3f718c;
+  fill: #3b82f6;
 }
 
 .gantt-chart .gantt-status-review .bar {
-  fill: #ad7a24;
+  fill: #f59e0b;
 }
 
 .gantt-chart .gantt-status-todo .bar {
-  fill: #8a929b;
+  fill: #94a3b8;
 }
