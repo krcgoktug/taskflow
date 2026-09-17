@@ -14,14 +14,14 @@ export const priorityLabels: Record<TaskPriority, string> = {
 };
 
 export const statusStyles: Record<TaskStatus, string> = {
-  todo: "bg-slate-400",
-  in_progress: "bg-[#3f718c]",
-  review: "bg-[#ad7a24]",
-  done: "bg-[#39705b]",
+  todo: "text-slate-500",
+  in_progress: "text-blue-700",
+  review: "text-amber-700",
+  done: "text-emerald-700",
 };
 
 export const priorityStyles: Record<TaskPriority, string> = {
   low: "text-slate-500",
-  medium: "text-[#8a5a24]",
-  high: "text-[#a44332]",
+  medium: "text-amber-700",
+  high: "text-red-700",
 };
