@@ -22,7 +22,8 @@ export const tasks: Task[] = [
     id: "task-1",
     code: "TF-101",
     title: "Benzer ürünleri ve ihtiyaçları araştır",
-    description: "Jira, Asana, Linear ve OpenProject özelliklerini karşılaştır.",
+    description:
+      "Jira, Asana, Linear ve OpenProject özelliklerini karşılaştır.",
     project: "TaskFlow MVP",
     status: "done",
     priority: "high",
@@ -37,7 +38,8 @@ export const tasks: Task[] = [
     id: "task-2",
     code: "TF-102",
     title: "Teknoloji yığınını belirle",
-    description: "Next.js, Supabase ve kullanılacak arayüz kütüphanelerini seç.",
+    description:
+      "Next.js, Supabase ve kullanılacak arayüz kütüphanelerini seç.",
     project: "TaskFlow MVP",
     status: "done",
     priority: "high",
@@ -112,7 +114,8 @@ export const tasks: Task[] = [
     id: "task-7",
     code: "TF-107",
     title: "Supabase tablolarını oluştur",
-    description: "Projeler, üyeler, görevler ve yorumlar için SQL şemasını uygula.",
+    description:
+      "Projeler, üyeler, görevler ve yorumlar için SQL şemasını uygula.",
     project: "TaskFlow MVP",
     status: "todo",
     priority: "high",

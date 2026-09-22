@@ -25,8 +25,7 @@ export function TaskTable({ initialTasks }: { initialTasks: Task[] }) {
         task.title.toLocaleLowerCase("tr-TR").includes(normalizedQuery) ||
         task.code.toLocaleLowerCase("tr-TR").includes(normalizedQuery);
       const matchesStatus = status === "all" || task.status === status;
-      const matchesPriority =
-        priority === "all" || task.priority === priority;
+      const matchesPriority = priority === "all" || task.priority === priority;
 
       return matchesQuery && matchesStatus && matchesPriority;
     });
@@ -96,7 +95,9 @@ export function TaskTable({ initialTasks }: { initialTasks: Task[] }) {
                   <p className="text-xs font-semibold text-blue-600">
                     {task.code}
                   </p>
-                  <p className="mt-1 font-medium text-slate-900">{task.title}</p>
+                  <p className="mt-1 font-medium text-slate-900">
+                    {task.title}
+                  </p>
                 </td>
                 <td className="px-5 py-4">
                   <StatusBadge status={task.status} />
@@ -110,7 +111,9 @@ export function TaskTable({ initialTasks }: { initialTasks: Task[] }) {
                       <span className="grid h-8 w-8 place-items-center rounded-full bg-slate-900 text-[10px] font-semibold text-white">
                         {task.assignee.initials}
                       </span>
-                      <span className="text-slate-700">{task.assignee.name}</span>
+                      <span className="text-slate-700">
+                        {task.assignee.name}
+                      </span>
                     </div>
                   ) : (
                     <span className="text-slate-400">Atanmadı</span>
