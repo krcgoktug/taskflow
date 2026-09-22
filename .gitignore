@@ -34,10 +34,6 @@ yarn-error.log*
 .env*
 !.env.example
 
-# local assistant instruction files
-AGENTS.md
-CLAUDE.md
-
 # vercel
 .vercel
 
