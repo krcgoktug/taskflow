@@ -1,7 +1,12 @@
 import { PageHeader } from "@/components/page-header";
 import { PriorityBadge, StatusBadge } from "@/components/task-badges";
 import { projects, tasks } from "@/lib/mock-data";
-import { AlertTriangle, CheckCircle2, CircleDashed, ListTodo } from "lucide-react";
+import {
+  AlertTriangle,
+  CheckCircle2,
+  CircleDashed,
+  ListTodo,
+} from "lucide-react";
 import type { ReactNode } from "react";
 
 export const metadata = {
@@ -45,7 +50,9 @@ export default function OverviewPage() {
     (task) => task.status !== "done" && task.dueDate < today,
   ).length;
   const project = projects[0];
-  const currentTasks = tasks.filter((task) => task.status !== "done").slice(0, 5);
+  const currentTasks = tasks
+    .filter((task) => task.status !== "done")
+    .slice(0, 5);
 
   return (
     <div className="mx-auto max-w-7xl">
@@ -101,7 +108,9 @@ export default function OverviewPage() {
                 className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold text-blue-600">{task.code}</p>
+                  <p className="text-xs font-semibold text-blue-600">
+                    {task.code}
+                  </p>
                   <p className="mt-1 truncate text-sm font-medium text-slate-900">
                     {task.title}
                   </p>
@@ -153,7 +162,6 @@ export default function OverviewPage() {
               </dd>
             </div>
           </dl>
-
         </article>
       </section>
     </div>

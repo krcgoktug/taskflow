@@ -16,9 +16,7 @@ export function StatusBadge({ status }: { status: TaskStatus }) {
 
 export function PriorityBadge({ priority }: { priority: TaskPriority }) {
   return (
-    <span
-      className={`text-xs font-medium ${priorityStyles[priority]}`}
-    >
+    <span className={`text-xs font-medium ${priorityStyles[priority]}`}>
       {priorityLabels[priority]}
     </span>
   );

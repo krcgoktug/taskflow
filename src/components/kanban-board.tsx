@@ -159,7 +159,10 @@ export function KanbanBoard({ initialTasks }: { initialTasks: Task[] }) {
     const taskId = String(event.active.id);
     const nextStatus = event.over?.id as TaskStatus | undefined;
 
-    if (!nextStatus || !columns.some((column) => column.status === nextStatus)) {
+    if (
+      !nextStatus ||
+      !columns.some((column) => column.status === nextStatus)
+    ) {
       return;
     }
 
