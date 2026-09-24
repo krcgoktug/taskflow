@@ -1,9 +1,7 @@
 import type { Assignee, Project, Task } from "@/lib/types";
 
 export const assignees: Assignee[] = [
-  { id: "user-1", name: "Ayşe Yılmaz", initials: "AY" },
-  { id: "user-2", name: "Mehmet Demir", initials: "MD" },
-  { id: "user-3", name: "Zeynep Kaya", initials: "ZK" },
+  { id: "user-1", name: "Göktuğ Karaca", initials: "GK" },
 ];
 
 export const projects: Project[] = [
@@ -11,9 +9,9 @@ export const projects: Project[] = [
     id: "project-1",
     name: "TaskFlow MVP",
     description: "Şirket içi görev ve proje takip uygulamasının ilk sürümü",
-    progress: 48,
+    progress: 65,
     dueDate: "2026-09-28",
-    memberCount: 3,
+    memberCount: 1,
   },
 ];
 
@@ -58,7 +56,7 @@ export const tasks: Task[] = [
     project: "TaskFlow MVP",
     status: "done",
     priority: "medium",
-    assignee: assignees[1],
+    assignee: assignees[0],
     startDate: "2026-09-13",
     dueDate: "2026-09-15",
     progress: 100,
@@ -103,7 +101,7 @@ export const tasks: Task[] = [
     project: "TaskFlow MVP",
     status: "in_progress",
     priority: "medium",
-    assignee: assignees[2],
+    assignee: assignees[0],
     startDate: "2026-09-16",
     dueDate: "2026-09-20",
     progress: 50,
@@ -117,12 +115,12 @@ export const tasks: Task[] = [
     description:
       "Projeler, üyeler, görevler ve yorumlar için SQL şemasını uygula.",
     project: "TaskFlow MVP",
-    status: "todo",
+    status: "in_progress",
     priority: "high",
     assignee: assignees[0],
     startDate: "2026-09-18",
     dueDate: "2026-09-21",
-    progress: 0,
+    progress: 75,
     tags: ["Supabase", "Database"],
     dependencyIds: ["task-2"],
   },
@@ -132,12 +130,12 @@ export const tasks: Task[] = [
     title: "Giriş ve yetkilendirmeyi bağla",
     description: "Supabase Auth ve RLS kurallarını uygulamaya bağla.",
     project: "TaskFlow MVP",
-    status: "todo",
+    status: "in_progress",
     priority: "high",
-    assignee: assignees[1],
+    assignee: assignees[0],
     startDate: "2026-09-21",
     dueDate: "2026-09-24",
-    progress: 0,
+    progress: 70,
     tags: ["Auth", "RLS"],
     dependencyIds: ["task-7"],
   },
@@ -149,7 +147,7 @@ export const tasks: Task[] = [
     project: "TaskFlow MVP",
     status: "todo",
     priority: "high",
-    assignee: assignees[2],
+    assignee: assignees[0],
     startDate: "2026-09-23",
     dueDate: "2026-09-26",
     progress: 0,

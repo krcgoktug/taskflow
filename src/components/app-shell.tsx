@@ -1,5 +1,6 @@
 "use client";
 
+import { logout } from "@/app/(auth)/actions";
 import {
   BarChart3,
   CalendarRange,
@@ -7,6 +8,7 @@ import {
   Columns3,
   FilePlus2,
   LayoutDashboard,
+  LogOut,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -44,7 +46,15 @@ function NavigationLinks() {
   });
 }
 
-export function AppShell({ children }: { children: ReactNode }) {
+export function AppShell({
+  children,
+  userEmail,
+}: {
+  children: ReactNode;
+  userEmail: string | null;
+}) {
+  const initials = userEmail ? userEmail.slice(0, 2).toUpperCase() : "GK";
+
   return (
     <div className="min-h-screen bg-slate-50">
       <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 border-r border-slate-200 bg-white p-5 lg:block">
@@ -73,10 +83,27 @@ export function AppShell({ children }: { children: ReactNode }) {
               <p className="text-xs text-slate-500">28 Eylül hedefi</p>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              {userEmail ? (
+                <span className="hidden max-w-48 truncate text-sm text-slate-600 sm:block">
+                  {userEmail}
+                </span>
+              ) : null}
               <span className="grid h-9 w-9 place-items-center rounded-full bg-slate-900 text-xs font-semibold text-white">
-                AY
+                {initials}
               </span>
+              {userEmail ? (
+                <form action={logout}>
+                  <button
+                    type="submit"
+                    aria-label="Çıkış yap"
+                    title="Çıkış yap"
+                    className="grid h-9 w-9 place-items-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+                  >
+                    <LogOut className="h-4 w-4" />
+                  </button>
+                </form>
+              ) : null}
             </div>
           </div>
 

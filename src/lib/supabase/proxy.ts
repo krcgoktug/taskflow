@@ -29,7 +29,16 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  await supabase.auth.getClaims();
+  const { data } = await supabase.auth.getClaims();
+  const isLoginPage = request.nextUrl.pathname === "/login";
+
+  if (!data?.claims && !isLoginPage) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  if (data?.claims && isLoginPage) {
+    return NextResponse.redirect(new URL("/overview", request.url));
+  }
 
   return response;
 }
