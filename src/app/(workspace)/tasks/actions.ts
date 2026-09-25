@@ -2,6 +2,7 @@
 
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
@@ -164,7 +165,7 @@ export async function deleteTask(taskId: string) {
 export async function createProject(
   _state: { error: string | null },
   formData: FormData,
-) {
+): Promise<{ error: string | null }> {
   const name = z
     .string()
     .trim()
@@ -179,8 +180,8 @@ export async function createProject(
       .insert({ name: name.data, owner_id: user.id });
     if (error) return { error: "Proje oluşturulamadı." };
     refresh();
-    return { error: null };
   } catch {
     return { error: "Proje oluşturulamadı. Oturumunuzu kontrol edin." };
   }
+  redirect("/overview");
 }
