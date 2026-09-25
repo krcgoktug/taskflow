@@ -1,6 +1,7 @@
 import { PageHeader } from "@/components/page-header";
 import { PriorityBadge, StatusBadge } from "@/components/task-badges";
-import { projects, tasks } from "@/lib/mock-data";
+import { getWorkspace } from "@/lib/workspace";
+import { CreateProjectForm } from "@/components/create-project-form";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -40,18 +41,22 @@ function StatCard({
   );
 }
 
-export default function OverviewPage() {
-  const today = new Date().toISOString().slice(0, 10);
+export default async function OverviewPage() {
+  const { tasks, project } = await getWorkspace();
+  if (!project) return <CreateProjectForm />;
+  const today = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Istanbul",
+  }).format(new Date());
   const completed = tasks.filter((task) => task.status === "done").length;
   const inProgress = tasks.filter(
     (task) => task.status === "in_progress" || task.status === "review",
   ).length;
   const overdue = tasks.filter(
-    (task) => task.status !== "done" && task.dueDate < today,
+    (task) => task.status !== "done" && task.dueDate && task.dueDate < today,
   ).length;
-  const project = projects[0];
   const currentTasks = tasks
     .filter((task) => task.status !== "done")
+    .sort((a, b) => (a.dueDate || "9999").localeCompare(b.dueDate || "9999"))
     .slice(0, 5);
 
   return (
@@ -65,7 +70,7 @@ export default function OverviewPage() {
         <StatCard
           label="Toplam görev"
           value={tasks.length}
-          note="TaskFlow MVP içindeki tüm işler"
+          note="Projedeki tüm işler"
           icon={<ListTodo className="h-5 w-5" />}
           color="bg-slate-100 text-slate-700"
         />
@@ -79,7 +84,7 @@ export default function OverviewPage() {
         <StatCard
           label="Tamamlanan"
           value={completed}
-          note="İlk hafta kapsamından biten işler"
+          note="Tamamlandı olarak işaretlenen işler"
           icon={<CheckCircle2 className="h-5 w-5" />}
           color="bg-emerald-50 text-emerald-700"
         />
@@ -102,6 +107,11 @@ export default function OverviewPage() {
           </div>
 
           <div className="divide-y divide-slate-100">
+            {!currentTasks.length && (
+              <p className="p-5 text-sm text-slate-500">
+                Açık görev bulunmuyor.
+              </p>
+            )}
             {currentTasks.map((task) => (
               <div
                 key={task.id}
@@ -153,7 +163,9 @@ export default function OverviewPage() {
           <dl className="mt-6 grid grid-cols-2 gap-4 border-t border-slate-100 pt-5 text-sm">
             <div>
               <dt className="text-slate-500">Hedef tarih</dt>
-              <dd className="mt-1 font-semibold text-slate-900">28 Eylül</dd>
+              <dd className="mt-1 font-semibold text-slate-900">
+                {project.dueDate || "Belirlenmedi"}
+              </dd>
             </div>
             <div>
               <dt className="text-slate-500">Ekip</dt>

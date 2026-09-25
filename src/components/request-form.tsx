@@ -1,6 +1,8 @@
 "use client";
 
-import { assignees } from "@/lib/mock-data";
+import { saveTask } from "@/app/(workspace)/tasks/actions";
+import type { Assignee, Task } from "@/lib/types";
+import { useRouter } from "next/navigation";
 import { taskFormSchema, type TaskFormValues } from "@/lib/validations/task";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle2 } from "lucide-react";
@@ -15,28 +17,61 @@ function FieldError({ message }: { message?: string }) {
   return <p className="mt-1.5 text-xs font-medium text-red-600">{message}</p>;
 }
 
-export function RequestForm() {
+export function RequestForm({
+  projectId,
+  assignees,
+  connected,
+  task,
+  onSaved,
+}: {
+  projectId: string;
+  assignees: Assignee[];
+  connected: boolean;
+  task?: Task;
+  onSaved?: () => void;
+}) {
+  const router = useRouter();
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [submittedTitle, setSubmittedTitle] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<TaskFormValues>({
     resolver: zodResolver(taskFormSchema),
     defaultValues: {
-      title: "",
-      description: "",
-      priority: "medium",
-      assigneeId: "",
-      startDate: "",
-      dueDate: "",
+      title: task?.title ?? "",
+      description: task?.description ?? "",
+      priority: task?.priority ?? "medium",
+      assigneeId: task?.assignee?.id ?? "",
+      startDate: task?.startDate ?? "",
+      dueDate: task?.dueDate ?? "",
     },
   });
 
-  function onSubmit(values: TaskFormValues) {
-    setSubmittedTitle(values.title);
-    reset();
+  async function onSubmit(values: TaskFormValues) {
+    setSaveError(null);
+    setSubmittedTitle(null);
+    if (!connected) {
+      setSubmittedTitle(values.title);
+      return;
+    }
+    try {
+      const result = await saveTask(projectId, task?.id ?? null, values);
+      if (result.error) {
+        setSaveError(result.error);
+        return;
+      }
+      setSubmittedTitle(values.title);
+      if (!task) reset();
+      router.refresh();
+      onSaved?.();
+    } catch {
+      setSaveError(
+        "Bağlantı kurulamadı. Bilgileriniz korunuyor; tekrar deneyin.",
+      );
+    }
   }
 
   return (
@@ -49,13 +84,22 @@ export function RequestForm() {
         <div className="mb-5 flex gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
           <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" />
           <div>
-            <strong className="block">Görev bilgileri doğrulandı</strong>“
-            {submittedTitle}” kaydı oluşturulmaya hazır.
+            <strong className="block">
+              {connected ? "Görev kaydedildi" : "Form doğrulandı"}
+            </strong>
+            {connected
+              ? submittedTitle
+              : "Örnek mod: veritabanına kayıt yapılmadı."}
           </div>
         </div>
       )}
 
-      <div className="grid gap-5">
+      {saveError && (
+        <p role="alert" className="mb-4 text-sm text-red-700">
+          {saveError}
+        </p>
+      )}
+      <fieldset disabled={isSubmitting} className="grid gap-5">
         <label className="text-sm font-medium text-slate-700">
           Görev başlığı
           <input
@@ -123,14 +167,19 @@ export function RequestForm() {
             <FieldError message={errors.dueDate?.message} />
           </label>
         </div>
-      </div>
+      </fieldset>
 
       <div className="mt-6 flex items-center justify-end border-t border-slate-100 pt-5">
         <button
           type="submit"
+          disabled={isSubmitting}
           className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2"
         >
-          Formu kontrol et
+          {isSubmitting
+            ? "Kaydediliyor..."
+            : connected
+              ? "Kaydet"
+              : "Formu kontrol et"}
         </button>
       </div>
     </form>

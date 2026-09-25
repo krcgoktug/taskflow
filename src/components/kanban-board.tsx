@@ -14,7 +14,9 @@ import {
 } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { CalendarDays, GripVertical } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { changeTaskStatus } from "@/app/(workspace)/tasks/actions";
 
 const columns: Array<{
   status: TaskStatus;
@@ -39,9 +41,9 @@ const columns: Array<{
   },
 ];
 
-function KanbanCard({ task }: { task: Task }) {
+function KanbanCard({ task, disabled }: { task: Task; disabled: boolean }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } =
-    useDraggable({ id: task.id });
+    useDraggable({ id: task.id, disabled });
 
   return (
     <article
@@ -60,6 +62,7 @@ function KanbanCard({ task }: { task: Task }) {
         </div>
         <button
           type="button"
+          disabled={disabled}
           aria-label={`${task.title} görevini taşı`}
           className="cursor-grab rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 active:cursor-grabbing"
           style={{ touchAction: "none" }}
@@ -74,10 +77,12 @@ function KanbanCard({ task }: { task: Task }) {
         <PriorityBadge priority={task.priority} />
         <span className="flex items-center gap-1 text-xs text-slate-500">
           <CalendarDays className="h-3.5 w-3.5" />
-          {new Intl.DateTimeFormat("tr-TR", {
-            day: "2-digit",
-            month: "short",
-          }).format(new Date(`${task.dueDate}T12:00:00`))}
+          {task.dueDate
+            ? new Intl.DateTimeFormat("tr-TR", {
+                day: "2-digit",
+                month: "short",
+              }).format(new Date(`${task.dueDate}T12:00:00`))
+            : "Tarih yok"}
         </span>
       </div>
 
@@ -112,11 +117,13 @@ function KanbanColumn({
   dotColor,
   borderColor,
   tasks,
+  disabled,
 }: {
   status: TaskStatus;
   dotColor: string;
   borderColor: string;
   tasks: Task[];
+  disabled: boolean;
 }) {
   const { isOver, setNodeRef } = useDroppable({ id: status });
 
@@ -141,21 +148,32 @@ function KanbanColumn({
 
       <div className="space-y-3">
         {tasks.map((task) => (
-          <KanbanCard key={task.id} task={task} />
+          <KanbanCard key={task.id} task={task} disabled={disabled} />
         ))}
       </div>
     </section>
   );
 }
 
-export function KanbanBoard({ initialTasks }: { initialTasks: Task[] }) {
+export function KanbanBoard({
+  initialTasks,
+  connected,
+}: {
+  initialTasks: Task[];
+  connected: boolean;
+}) {
+  const router = useRouter();
+  const saving = useRef(false);
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [boardTasks, setBoardTasks] = useState(initialTasks);
   const [lastChange, setLastChange] = useState<string | null>(null);
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
   );
 
-  function handleDragEnd(event: DragEndEvent) {
+  async function handleDragEnd(event: DragEndEvent) {
+    if (saving.current) return;
     const taskId = String(event.active.id);
     const nextStatus = event.over?.id as TaskStatus | undefined;
 
@@ -168,12 +186,33 @@ export function KanbanBoard({ initialTasks }: { initialTasks: Task[] }) {
 
     const draggedTask = boardTasks.find((task) => task.id === taskId);
     if (!draggedTask || draggedTask.status === nextStatus) return;
+    setError(null);
 
     setBoardTasks((currentTasks) =>
       currentTasks.map((task) =>
         task.id === taskId ? { ...task, status: nextStatus } : task,
       ),
     );
+    if (connected) {
+      saving.current = true;
+      setPending(true);
+      try {
+        const result = await changeTaskStatus(taskId, nextStatus);
+        if (result.error) {
+          setBoardTasks(boardTasks);
+          setError(result.error);
+          return;
+        }
+        router.refresh();
+      } catch {
+        setBoardTasks(boardTasks);
+        setError("Değişiklik kaydedilemedi; görev eski durumuna döndü.");
+        return;
+      } finally {
+        saving.current = false;
+        setPending(false);
+      }
+    }
     setLastChange(
       `${draggedTask.code}, “${statusLabels[nextStatus]}” sütununa taşındı.`,
     );
@@ -181,6 +220,21 @@ export function KanbanBoard({ initialTasks }: { initialTasks: Task[] }) {
 
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+      {error && (
+        <p role="alert" className="mb-4 text-sm text-red-700">
+          {error}
+        </p>
+      )}
+      {pending && (
+        <p role="status" className="mb-4 text-sm">
+          Kaydediliyor...
+        </p>
+      )}
+      {!connected && (
+        <p className="mb-4 text-sm text-slate-500">
+          Örnek mod: değişiklikler yalnızca bu ekranda tutulur.
+        </p>
+      )}
       {lastChange && (
         <div className="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
           {lastChange}
@@ -192,6 +246,7 @@ export function KanbanBoard({ initialTasks }: { initialTasks: Task[] }) {
           <KanbanColumn
             key={column.status}
             {...column}
+            disabled={pending}
             tasks={boardTasks.filter((task) => task.status === column.status)}
           />
         ))}
