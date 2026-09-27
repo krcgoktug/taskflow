@@ -5,6 +5,7 @@ import { statusLabels } from "@/lib/constants";
 import type { Task, TaskStatus } from "@/lib/types";
 import {
   DndContext,
+  KeyboardSensor,
   PointerSensor,
   type DragEndEvent,
   useDraggable,
@@ -170,6 +171,7 @@ export function KanbanBoard({
   const [lastChange, setLastChange] = useState<string | null>(null);
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor),
   );
 
   async function handleDragEnd(event: DragEndEvent) {
@@ -219,7 +221,11 @@ export function KanbanBoard({
   }
 
   return (
-    <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+    <DndContext
+      id="taskflow-kanban"
+      sensors={sensors}
+      onDragEnd={handleDragEnd}
+    >
       {error && (
         <p role="alert" className="mb-4 text-sm text-red-700">
           {error}
