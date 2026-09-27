@@ -1,19 +1,33 @@
 "use client";
 
-import { tasks } from "@/lib/mock-data";
+import type { Task } from "@/lib/types";
 import { useEffect, useRef, useState } from "react";
 
-const ganttTasks = tasks.map((task) => ({
-  id: task.id,
-  name: `${task.code} · ${task.title}`,
-  start: task.startDate,
-  end: task.dueDate,
-  progress: task.progress,
-  dependencies: task.dependencyIds.join(","),
-  custom_class: `gantt-status-${task.status}`,
-}));
+function toGanttTasks(tasks: Task[]) {
+  return tasks
+    .filter((task) => task.startDate && task.dueDate)
+    .map((task) => ({
+      id: task.id,
+      name: `${task.code} · ${task.title}`.replace(
+        /[&<>"']/g,
+        (char) =>
+          ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;",
+          })[char]!,
+      ),
+      start: task.startDate,
+      end: task.dueDate,
+      progress: task.progress,
+      dependencies: task.dependencyIds.join(","),
+      custom_class: `gantt-status-${task.status}`,
+    }));
+}
 
-export function GanttChart() {
+export function GanttChart({ tasks }: { tasks: Task[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,6 +43,8 @@ export function GanttChart() {
         const { default: Gantt } = await import("frappe-gantt");
         if (cancelled || !container) return;
 
+        const ganttTasks = toGanttTasks(tasks);
+        if (!ganttTasks.length) return;
         new Gantt(container, ganttTasks, {
           view_mode: "Day",
           view_mode_select: true,
@@ -53,7 +69,7 @@ export function GanttChart() {
       cancelled = true;
       container.innerHTML = "";
     };
-  }, []);
+  }, [tasks]);
 
   if (error) {
     return (
@@ -65,6 +81,11 @@ export function GanttChart() {
 
   return (
     <div className="gantt-chart overflow-x-auto rounded-xl border border-slate-200 bg-white p-2">
+      {!tasks.some((task) => task.startDate && task.dueDate) && (
+        <p className="p-4 text-sm text-slate-500">
+          Tarihleri belirlenmiş görev bulunmuyor.
+        </p>
+      )}
       <div ref={containerRef} className="min-w-[900px]" />
     </div>
   );

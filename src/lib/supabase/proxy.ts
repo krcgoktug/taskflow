@@ -31,13 +31,18 @@ export async function updateSession(request: NextRequest) {
 
   const { data } = await supabase.auth.getClaims();
   const isLoginPage = request.nextUrl.pathname === "/login";
+  function redirectTo(path: string) {
+    const redirect = NextResponse.redirect(new URL(path, request.url));
+    response.cookies.getAll().forEach((cookie) => redirect.cookies.set(cookie));
+    return redirect;
+  }
 
   if (!data?.claims && !isLoginPage) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    return redirectTo("/login");
   }
 
   if (data?.claims && isLoginPage) {
-    return NextResponse.redirect(new URL("/overview", request.url));
+    return redirectTo("/overview");
   }
 
   return response;

@@ -2,7 +2,10 @@
 
 import { PriorityBadge, StatusBadge } from "@/components/task-badges";
 import { priorityLabels, statusLabels } from "@/lib/constants";
-import type { Task, TaskPriority, TaskStatus } from "@/lib/types";
+import type { Assignee, Task, TaskPriority, TaskStatus } from "@/lib/types";
+import { changeTaskStatus, deleteTask } from "@/app/(workspace)/tasks/actions";
+import { RequestForm } from "@/components/request-form";
+import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
@@ -11,7 +14,35 @@ const dateFormatter = new Intl.DateTimeFormat("tr-TR", {
   month: "short",
 });
 
-export function TaskTable({ initialTasks }: { initialTasks: Task[] }) {
+export function TaskTable({
+  initialTasks,
+  projectId,
+  assignees,
+  connected,
+}: {
+  initialTasks: Task[];
+  projectId: string;
+  assignees: Assignee[];
+  connected: boolean;
+}) {
+  const router = useRouter();
+  const [editing, setEditing] = useState<Task | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  async function mutate(action: () => Promise<{ error: string | null }>) {
+    if (busy) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const result = await action();
+      if (result.error) setError(result.error);
+      else router.refresh();
+    } catch {
+      setError("Bağlantı kurulamadı. Tekrar deneyin.");
+    } finally {
+      setBusy(false);
+    }
+  }
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<TaskStatus | "all">("all");
   const [priority, setPriority] = useState<TaskPriority | "all">("all");
@@ -33,6 +64,27 @@ export function TaskTable({ initialTasks }: { initialTasks: Task[] }) {
 
   return (
     <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      {error && (
+        <p role="alert" className="p-4 text-sm text-red-700">
+          {error}
+        </p>
+      )}
+      {editing && (
+        <div className="p-4">
+          <div className="mb-3 flex justify-between">
+            <h2>Görevi düzenle</h2>
+            <button onClick={() => setEditing(null)}>Kapat</button>
+          </div>
+          <RequestForm
+            key={editing.id}
+            task={editing}
+            projectId={projectId}
+            assignees={assignees}
+            connected={connected}
+            onSaved={() => setEditing(null)}
+          />
+        </div>
+      )}
       <div className="grid gap-3 border-b border-slate-200 p-4 md:grid-cols-[1fr_190px_170px]">
         <label className="relative">
           <span className="sr-only">Görev ara</span>
@@ -86,6 +138,9 @@ export function TaskTable({ initialTasks }: { initialTasks: Task[] }) {
               <th className="px-5 py-3 font-semibold">Sorumlu</th>
               <th className="px-5 py-3 font-semibold">Bitiş</th>
               <th className="px-5 py-3 font-semibold">İlerleme</th>
+              {connected && (
+                <th className="px-5 py-3 font-semibold">İşlemler</th>
+              )}
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -100,7 +155,27 @@ export function TaskTable({ initialTasks }: { initialTasks: Task[] }) {
                   </p>
                 </td>
                 <td className="px-5 py-4">
-                  <StatusBadge status={task.status} />
+                  {connected ? (
+                    <select
+                      aria-label={`${task.title} durumu`}
+                      value={task.status}
+                      disabled={busy}
+                      onChange={(event) =>
+                        void mutate(() =>
+                          changeTaskStatus(task.id, event.target.value),
+                        )
+                      }
+                      className="rounded border border-slate-200 bg-white p-1"
+                    >
+                      {Object.entries(statusLabels).map(([value, label]) => (
+                        <option key={value} value={value}>
+                          {label}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <StatusBadge status={task.status} />
+                  )}
                 </td>
                 <td className="px-5 py-4">
                   <PriorityBadge priority={task.priority} />
@@ -120,7 +195,9 @@ export function TaskTable({ initialTasks }: { initialTasks: Task[] }) {
                   )}
                 </td>
                 <td className="px-5 py-4 text-slate-600">
-                  {dateFormatter.format(new Date(`${task.dueDate}T12:00:00`))}
+                  {task.dueDate
+                    ? dateFormatter.format(new Date(`${task.dueDate}T12:00:00`))
+                    : "Belirlenmedi"}
                 </td>
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-3">
@@ -135,8 +212,45 @@ export function TaskTable({ initialTasks }: { initialTasks: Task[] }) {
                     </span>
                   </div>
                 </td>
+                {connected && (
+                  <td className="px-5 py-4">
+                    <div className="flex gap-3">
+                      <button
+                        disabled={busy}
+                        onClick={() => setEditing(task)}
+                        className="text-blue-700"
+                      >
+                        Düzenle
+                      </button>
+                      <button
+                        disabled={busy}
+                        className="text-red-700"
+                        onClick={() => {
+                          if (
+                            window.confirm(
+                              `“${task.title}” ve ilişkili yorumları silinsin mi? Bu işlem geri alınamaz.`,
+                            )
+                          )
+                            void mutate(() => deleteTask(task.id));
+                        }}
+                      >
+                        Sil
+                      </button>
+                    </div>
+                  </td>
+                )}
               </tr>
             ))}
+            {!filteredTasks.length && (
+              <tr>
+                <td
+                  colSpan={connected ? 7 : 6}
+                  className="p-6 text-center text-slate-500"
+                >
+                  Görev bulunamadı.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

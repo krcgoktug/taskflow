@@ -14,8 +14,8 @@ export const taskFormSchema = z
       .max(500, "Açıklama en fazla 500 karakter olabilir."),
     priority: z.enum(["low", "medium", "high"]),
     assigneeId: z.string().min(1, "Bir sorumlu seçmelisin."),
-    startDate: z.string().min(1, "Başlangıç tarihi gerekli."),
-    dueDate: z.string().min(1, "Bitiş tarihi gerekli."),
+    startDate: z.iso.date("Geçerli bir başlangıç tarihi girin."),
+    dueDate: z.iso.date("Geçerli bir bitiş tarihi girin."),
   })
   .refine((data) => data.dueDate >= data.startDate, {
     message: "Bitiş tarihi başlangıç tarihinden önce olamaz.",
