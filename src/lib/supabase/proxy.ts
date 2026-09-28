@@ -29,7 +29,9 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  const { data } = await supabase.auth.getClaims();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   const isLoginPage = request.nextUrl.pathname === "/login";
   function redirectTo(path: string) {
     const redirect = NextResponse.redirect(new URL(path, request.url));
@@ -37,11 +39,11 @@ export async function updateSession(request: NextRequest) {
     return redirect;
   }
 
-  if (!data?.claims && !isLoginPage) {
+  if (!user && !isLoginPage) {
     return redirectTo("/login");
   }
 
-  if (data?.claims && isLoginPage) {
+  if (user && isLoginPage) {
     return redirectTo("/overview");
   }
 
