@@ -9,6 +9,7 @@ import {
   FilePlus2,
   LayoutDashboard,
   LogOut,
+  UserRound,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -20,6 +21,7 @@ const navigation = [
   { href: "/board", label: "Kanban", icon: Columns3 },
   { href: "/timeline", label: "Gantt", icon: CalendarRange },
   { href: "/requests", label: "Yeni talep", icon: FilePlus2 },
+  { href: "/account", label: "Hesap", icon: UserRound },
 ];
 
 function NavigationLinks() {
@@ -85,9 +87,12 @@ export function AppShell({
 
             <div className="flex items-center gap-2">
               {userEmail ? (
-                <span className="hidden max-w-48 truncate text-sm text-slate-600 sm:block">
+                <Link
+                  href="/account"
+                  className="hidden max-w-48 truncate text-sm text-slate-600 hover:text-blue-600 sm:block"
+                >
                   {userEmail}
-                </span>
+                </Link>
               ) : null}
               <span className="grid h-9 w-9 place-items-center rounded-full bg-slate-900 text-xs font-semibold text-white">
                 {initials}
