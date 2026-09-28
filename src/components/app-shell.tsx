@@ -77,10 +77,10 @@ export function AppShell({
         <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/95 backdrop-blur">
           <div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
             <div>
-              <p className="text-sm font-semibold text-slate-900">
-                TaskFlow MVP
+              <p className="text-sm font-semibold text-slate-900">TaskFlow</p>
+              <p className="text-xs text-slate-500">
+                Proje ve Görev Takip Paneli
               </p>
-              <p className="text-xs text-slate-500">28 Eylül hedefi</p>
             </div>
 
             <div className="flex items-center gap-2">
