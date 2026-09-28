@@ -21,7 +21,10 @@ export default async function WorkspaceLayout({
       redirect("/login");
     }
 
-    userEmail = user.email ?? null;
+    userEmail =
+      user.email === process.env.ADMIN_LOGIN_EMAIL
+        ? "admin"
+        : (user.email ?? null);
   }
 
   return <AppShell userEmail={userEmail}>{children}</AppShell>;

@@ -18,7 +18,7 @@ export async function login(
   }
 
   const result = loginSchema.safeParse({
-    email: formData.get("email"),
+    username: formData.get("username"),
     password: formData.get("password"),
   });
 
@@ -28,11 +28,19 @@ export async function login(
     };
   }
 
+  const adminEmail = process.env.ADMIN_LOGIN_EMAIL;
+  if (result.data.username !== "admin" || !adminEmail) {
+    return { error: "Kullanıcı adı veya şifre hatalı." };
+  }
+
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword(result.data);
+  const { error } = await supabase.auth.signInWithPassword({
+    email: adminEmail,
+    password: result.data.password,
+  });
 
   if (error) {
-    return { error: "E-posta adresi veya şifre hatalı." };
+    return { error: "Kullanıcı adı veya şifre hatalı." };
   }
 
   redirect("/overview");

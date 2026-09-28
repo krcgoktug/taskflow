@@ -12,16 +12,16 @@ export function LoginForm() {
     <form action={formAction} className="mt-7 space-y-5">
       <div>
         <label
-          htmlFor="email"
+          htmlFor="username"
           className="mb-2 block text-sm font-medium text-slate-800"
         >
-          E-posta
+          Kullanıcı adı
         </label>
         <input
-          id="email"
-          name="email"
-          type="email"
-          autoComplete="email"
+          id="username"
+          name="username"
+          type="text"
+          autoComplete="username"
           required
           className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
         />
