@@ -1,7 +1,7 @@
 "use client";
 
 import { saveTask } from "@/app/(workspace)/tasks/actions";
-import type { Assignee, Task } from "@/lib/types";
+import type { Task } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { taskFormSchema, type TaskFormValues } from "@/lib/validations/task";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,13 +19,11 @@ function FieldError({ message }: { message?: string }) {
 
 export function RequestForm({
   projectId,
-  assignees,
   connected,
   task,
   onSaved,
 }: {
   projectId: string;
-  assignees: Assignee[];
   connected: boolean;
   task?: Task;
   onSaved?: () => void;
@@ -44,7 +42,7 @@ export function RequestForm({
       title: task?.title ?? "",
       description: task?.description ?? "",
       priority: task?.priority ?? "medium",
-      assigneeId: task?.assignee?.id ?? "",
+      assigneeName: task?.assignee?.name ?? "",
       startDate: task?.startDate ?? "",
       dueDate: task?.dueDate ?? "",
     },
@@ -134,17 +132,19 @@ export function RequestForm({
 
           <label className="text-sm font-medium text-slate-700">
             Sorumlu
-            <select {...register("assigneeId")} className={inputClassName}>
-              <option value="">Seçiniz</option>
-              {assignees.map((assignee) => (
-                <option key={assignee.id} value={assignee.id}>
-                  {assignee.name}
-                </option>
-              ))}
-            </select>
-            <FieldError message={errors.assigneeId?.message} />
+            <input
+              {...register("assigneeName")}
+              placeholder="Ad soyad yazın"
+              autoComplete="off"
+              className={inputClassName}
+            />
+            <FieldError message={errors.assigneeName?.message} />
           </label>
         </div>
+
+        <p className="-mt-3 text-xs text-slate-500">
+          Yazılan isim görevde görünür; kullanıcı hesabı oluşturmaz.
+        </p>
 
         <div className="grid gap-5 md:grid-cols-2">
           <label className="text-sm font-medium text-slate-700">

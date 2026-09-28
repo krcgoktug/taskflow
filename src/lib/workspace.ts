@@ -18,6 +18,7 @@ type TaskRow = {
   status: TaskStatus;
   priority: TaskPriority;
   assignee_id: string | null;
+  assignee_name: string | null;
   start_date: string | null;
   due_date: string | null;
   progress: number;
@@ -62,7 +63,7 @@ export const getWorkspace = cache(
       supabase
         .from("tasks")
         .select(
-          "id, code, title, description, status, priority, assignee_id, start_date, due_date, progress",
+          "id, code, title, description, status, priority, assignee_id, assignee_name, start_date, due_date, progress",
         )
         .eq("project_id", project.id)
         .order("created_at", { ascending: false })
@@ -89,7 +90,7 @@ export const getWorkspace = cache(
       .in("id", memberIds);
     if (profileError) throw new Error("Proje üyeleri yüklenemedi.");
     const assignees = (profiles ?? []).map((profile) => {
-      const name =
+      const name: string =
         profile.full_name ||
         (profile.id === user.id ? user.email?.split("@")[0] : null) ||
         "Üye";
@@ -104,24 +105,38 @@ export const getWorkspace = cache(
           .toLocaleUpperCase("tr-TR"),
       };
     });
-    const tasks = (taskResult.data ?? []).map((row) => ({
-      id: row.id,
-      code: row.code,
-      title: row.title,
-      description: row.description,
-      project: project.name,
-      status: row.status,
-      priority: row.priority,
-      assignee:
-        assignees.find((person) => person.id === row.assignee_id) ?? null,
-      startDate: row.start_date ?? "",
-      dueDate: row.due_date ?? "",
-      progress: row.progress,
-      tags: [],
-      dependencyIds: (dependencyResult.data ?? [])
-        .filter((dependency) => dependency.successor_task_id === row.id)
-        .map((dependency) => dependency.predecessor_task_id),
-    }));
+    const tasks = (taskResult.data ?? []).map((row) => {
+      const name: string | undefined =
+        row.assignee_name ||
+        assignees.find((person) => person.id === row.assignee_id)?.name;
+      return {
+        id: row.id,
+        code: row.code,
+        title: row.title,
+        description: row.description,
+        project: project.name,
+        status: row.status,
+        priority: row.priority,
+        assignee: name
+          ? {
+              name,
+              initials: name
+                .split(/\s+/)
+                .map((part) => part[0])
+                .slice(0, 2)
+                .join("")
+                .toLocaleUpperCase("tr-TR"),
+            }
+          : null,
+        startDate: row.start_date ?? "",
+        dueDate: row.due_date ?? "",
+        progress: row.progress,
+        tags: [],
+        dependencyIds: (dependencyResult.data ?? [])
+          .filter((dependency) => dependency.successor_task_id === row.id)
+          .map((dependency) => dependency.predecessor_task_id),
+      };
+    });
     return {
       connected: true,
       assignees,

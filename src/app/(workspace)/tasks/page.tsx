@@ -8,7 +8,7 @@ export const metadata = {
 };
 
 export default async function TasksPage() {
-  const { tasks, project, assignees, connected } = await getWorkspace();
+  const { tasks, project, connected } = await getWorkspace();
   if (!project) return <CreateProjectForm />;
   return (
     <div className="mx-auto max-w-7xl">
@@ -19,7 +19,6 @@ export default async function TasksPage() {
       <TaskTable
         initialTasks={tasks}
         projectId={project.id}
-        assignees={assignees}
         connected={connected}
       />
     </div>

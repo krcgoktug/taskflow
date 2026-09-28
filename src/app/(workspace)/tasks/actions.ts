@@ -46,32 +46,21 @@ export async function saveTask(
   )
     return { error: "Görev bilgilerini kontrol edin." };
   const fields = parsed.data;
-  if (!idSchema.safeParse(fields.assigneeId).success)
-    return { error: "Geçerli bir sorumlu seçin." };
   try {
     const { supabase, user } = await session();
     const { data: project, error: projectError } = await supabase
       .from("projects")
-      .select("owner_id")
+      .select("id")
       .eq("id", projectId)
       .single();
     if (projectError || !project)
       return { error: "Proje bulunamadı veya erişim izniniz yok." };
-    if (fields.assigneeId !== project.owner_id) {
-      const { data: member, error } = await supabase
-        .from("project_members")
-        .select("user_id")
-        .eq("project_id", projectId)
-        .eq("user_id", fields.assigneeId)
-        .maybeSingle();
-      if (error || !member)
-        return { error: "Sorumlu bu projenin üyesi olmalı." };
-    }
     const payload = {
       title: fields.title,
       description: fields.description,
       priority: fields.priority,
-      assignee_id: fields.assigneeId,
+      assignee_id: null,
+      assignee_name: fields.assigneeName,
       start_date: fields.startDate,
       due_date: fields.dueDate,
     };
