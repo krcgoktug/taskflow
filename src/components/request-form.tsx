@@ -139,12 +139,11 @@ export function RequestForm({
               className={inputClassName}
             />
             <FieldError message={errors.assigneeName?.message} />
+            <span className="mt-1.5 block text-xs font-normal text-slate-500">
+              Yazılan ad yalnızca görevde görünür.
+            </span>
           </label>
         </div>
-
-        <p className="-mt-3 text-xs text-slate-500">
-          Yazılan isim görevde görünür; kullanıcı hesabı oluşturmaz.
-        </p>
 
         <div className="grid gap-5 md:grid-cols-2">
           <label className="text-sm font-medium text-slate-700">
