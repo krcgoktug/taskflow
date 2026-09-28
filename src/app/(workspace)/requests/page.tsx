@@ -8,7 +8,7 @@ export const metadata = {
 };
 
 export default async function RequestsPage() {
-  const { project, assignees, connected } = await getWorkspace();
+  const { project, connected } = await getWorkspace();
   if (!project) return <CreateProjectForm />;
   return (
     <div className="mx-auto max-w-3xl">
@@ -16,11 +16,7 @@ export default async function RequestsPage() {
         title="Yeni görev talebi"
         description="Yeni görevin bilgilerini girin."
       />
-      <RequestForm
-        projectId={project.id}
-        assignees={assignees}
-        connected={connected}
-      />
+      <RequestForm projectId={project.id} connected={connected} />
     </div>
   );
 }

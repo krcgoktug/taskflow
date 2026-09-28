@@ -2,7 +2,7 @@
 
 import { PriorityBadge, StatusBadge } from "@/components/task-badges";
 import { priorityLabels, statusLabels } from "@/lib/constants";
-import type { Assignee, Task, TaskPriority, TaskStatus } from "@/lib/types";
+import type { Task, TaskPriority, TaskStatus } from "@/lib/types";
 import { changeTaskStatus, deleteTask } from "@/app/(workspace)/tasks/actions";
 import { RequestForm } from "@/components/request-form";
 import { useRouter } from "next/navigation";
@@ -17,12 +17,10 @@ const dateFormatter = new Intl.DateTimeFormat("tr-TR", {
 export function TaskTable({
   initialTasks,
   projectId,
-  assignees,
   connected,
 }: {
   initialTasks: Task[];
   projectId: string;
-  assignees: Assignee[];
   connected: boolean;
 }) {
   const router = useRouter();
@@ -79,7 +77,6 @@ export function TaskTable({
             key={editing.id}
             task={editing}
             projectId={projectId}
-            assignees={assignees}
             connected={connected}
             onSaved={() => setEditing(null)}
           />

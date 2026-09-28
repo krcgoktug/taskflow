@@ -16,7 +16,7 @@ export type Task = {
   project: string;
   status: TaskStatus;
   priority: TaskPriority;
-  assignee: Assignee | null;
+  assignee: Pick<Assignee, "name" | "initials"> | null;
   startDate: string;
   dueDate: string;
   progress: number;

@@ -13,7 +13,11 @@ export const taskFormSchema = z
       .min(10, "Açıklama en az 10 karakter olmalı.")
       .max(500, "Açıklama en fazla 500 karakter olabilir."),
     priority: z.enum(["low", "medium", "high"]),
-    assigneeId: z.string().min(1, "Bir sorumlu seçmelisin."),
+    assigneeName: z
+      .string()
+      .trim()
+      .min(2, "Sorumlu adı en az 2 karakter olmalı.")
+      .max(80, "Sorumlu adı en fazla 80 karakter olabilir."),
     startDate: z.iso.date("Geçerli bir başlangıç tarihi girin."),
     dueDate: z.iso.date("Geçerli bir bitiş tarihi girin."),
   })
